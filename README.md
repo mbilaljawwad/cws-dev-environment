@@ -1,4 +1,4 @@
-# Note: This architecture blueprint is used as reference for starting the product.
+### Note: This architecture blueprint is used as reference for starting the product.
 It may change from the actual scope. 
 
 # Coworking Admin Portal – Architecture Blueprint (Full Document)
