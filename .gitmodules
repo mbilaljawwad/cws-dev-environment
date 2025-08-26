@@ -1,0 +1,6 @@
+[submodule "cws-backend"]
+	path = cws-backend
+	url = https://github.com/mbilaljawwad/cws-backend
+[submodule "cws-frontend"]
+	path = cws-frontend
+	url = https://github.com/mbilaljawwad/cws-frontend
