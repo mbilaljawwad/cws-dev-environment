@@ -1,0 +1,59 @@
+version: '3.8'
+
+services:
+  # Backend service with hot reloading
+  backend:
+    build:
+      context: ./cws-backend
+      dockerfile: dev.DockerFile
+      target: development
+    container_name: cws-backend-dev
+    ports:
+      - "9000:9000"
+    volumes:
+      # Mount source code for hot reloading
+      - ./cws-backend:/app
+      # Exclude node_modules and other build artifacts
+      - ./cws-backend/tmp:/app/tmp
+    environment:
+      - APP_ENV=development
+      - CGO_ENABLED=0
+      - GOOS=linux
+    networks:
+      - cws-network
+    # Restart policy for development
+    restart: unless-stopped
+    # Health check
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/healthcheck"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Frontend service (when ready)
+  # frontend:
+  #   build:
+  #     context: ./cws-frontend
+  #     dockerfile: Dockerfile.dev
+  #   container_name: cws-frontend-dev
+  #   ports:
+  #     - "3000:3000"
+  #   volumes:
+  #     - ./cws-frontend:/app:cached
+  #     - /app/node_modules
+  #   environment:
+  #     - NODE_ENV=development
+  #   networks:
+  #     - cws-network
+  #   depends_on:
+  #     - backend
+
+networks:
+  cws-network:
+    driver: bridge
+
+# Optional: Add volumes for persistent data
+volumes:
+  go_mod_cache:
+    driver: local
