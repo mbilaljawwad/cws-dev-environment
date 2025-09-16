@@ -19,8 +19,13 @@ services:
       - APP_ENV=development
       - CGO_ENABLED=0
       - GOOS=linux
-    networks:
-      - cws-network
+      - DB_HOST=database
+      - DB_PORT=5432
+      - DB_USER=postgres
+      - DB_PASSWORD=postgres
+      - DB_NAME=cwsdb
+    depends_on:
+      - database
     # Restart policy for development
     restart: unless-stopped
     # Health check
@@ -30,6 +35,29 @@ services:
       timeout: 10s
       retries: 3
       start_period: 40s
+
+  database:
+    image: postgres:17-alpine
+    container_name: cws-database
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=cwsdb
+    volumes:  
+     - ./cws-backend/postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+      
+
 
   # Frontend service (when ready)
   # frontend:
@@ -48,12 +76,3 @@ services:
   #     - cws-network
   #   depends_on:
   #     - backend
-
-networks:
-  cws-network:
-    driver: bridge
-
-# Optional: Add volumes for persistent data
-volumes:
-  go_mod_cache:
-    driver: local
